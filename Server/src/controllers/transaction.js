@@ -245,7 +245,7 @@ exports.myTransaction = async (req, res) => {
           user_id: req.user.id
         },
         attributes: {
-          exclude: ["user_id", "createdAt", "updatedAt"],
+          exclude: ["user_id", "updatedAt"],
         },
         include: [
           {
@@ -278,13 +278,13 @@ exports.myTransaction = async (req, res) => {
         })
         return {
           id: transactionData.id,
-          user: transactionData.user,
           name: transactionData.name,
           email: transactionData.email,
           phone: transactionData.phone,
           address: transactionData.address,
           attachment: transactionData.attachment,
           status: transactionData.status,
+          date: transactionData.createdAt,
           products
         }
       }) 
