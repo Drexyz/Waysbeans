@@ -202,3 +202,32 @@ exports.checkUser = async (req, res) => {
     });
   }
 }
+exports.editUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (!req.file){
+      await user.update({...req.body}, {
+        where: {
+          id,
+        },
+      });
+    } else {
+      await user.update({...req.body, photo: req.file.filename,}, {
+        where: {
+          id,
+        },
+      });
+    }
+
+    //response
+    res.send({
+      status: "success",
+    });
+  } catch (error) {
+    console.log(error);
+    res.send({
+      status: "failed",
+      message: "Server Error",
+    });
+  }
+}
