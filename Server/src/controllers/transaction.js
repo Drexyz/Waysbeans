@@ -13,6 +13,7 @@ exports.addTransaction = async (req, res) => {
         name: req.body.name,
         email: req.body.email,
         phone: req.body.phone,
+        posscode: req.body.posscode,
         address: req.body.address,
         attachment: req.file.filename,
         user_id: req.user.id,
@@ -74,6 +75,7 @@ exports.addTransaction = async (req, res) => {
             name: newlyTransaction.name,
             email: newlyTransaction.email,
             phone: newlyTransaction.phone,
+            posscode: newlyTransaction.posscode,
             address: newlyTransaction.address,
             attachment: newlyTransaction.attachment,
             status: newlyTransaction.status,
@@ -97,6 +99,7 @@ exports.getTransactions = async (req, res) => {
       attributes: {
         exclude: ["user_id", "createdAt", "updatedAt"],
       },
+      order: [['id', 'DESC']],
       include: [
         {
           model: user,
@@ -138,6 +141,7 @@ exports.getTransactions = async (req, res) => {
         email: transactionData.email,
         phone: transactionData.phone,
         address: transactionData.address,
+        posscode: transactionData.posscode,
         attachment: transactionData.attachment,
         status: transactionData.status,
         products
