@@ -309,3 +309,57 @@ exports.myTransaction = async (req, res) => {
     });
   }
 }
+exports.getTransaction = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let transactionData = await transaction.findOne({
+      where: {
+        id
+      },
+      attributes: {
+        exclude: ["user_id", "updatedAt"],
+      },
+      include: [
+        {
+          model: order,
+          as: "productOrdered",
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          include: {
+            model: product,
+            as: "product",
+            attributes: {
+              exclude: ["createdAt", "updatedAt"],
+            },
+          }
+        }
+      ]
+    })
+    //modify data for response
+    transactionData.productOrdered.map(elem => {
+      return {
+        id: elem.product.id,
+        name: elem.product.name,
+        price: elem.product.price,
+        description: elem.product.description,
+        photo: elem.product.photo,
+        orderQuantity: elem.orderQuantity,
+      }
+    }) 
+
+    //response
+    res.send({
+      status: "success",
+      data: {
+        transaction: transactionData
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    res.send({
+      status: "failed",
+      message: "Server Error",
+    });
+  }
+}
