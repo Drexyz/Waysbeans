@@ -363,3 +363,85 @@ exports.getTransaction = async (req, res) => {
     });
   }
 }
+exports.getTransactionsF = async (req, res) => {
+  try {
+    let { status } = req.params
+    if (status === 'waiting-approve') {
+      status = 'waiting approve'
+    }
+    if (status === 'on-the-way') {
+      status = 'on the way'
+    }
+    //get data from db
+    let transactionsData = await transaction.findAll({
+      attributes: {
+        exclude: ["user_id", "createdAt", "updatedAt"],
+      },
+      where: {
+        status
+      },
+      order: [['id', 'DESC']],
+      include: [
+        {
+          model: user,
+          as: 'user',
+          attributes: ["id", "fullname", "email"],
+        },
+        {
+          model: order,
+          as: "productOrdered",
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          include: {
+            model: product,
+            as: "product",
+            attributes: {
+              exclude: ["createdAt", "updatedAt"],
+            },
+          }
+        }
+      ]
+    })
+    //modify data for response
+    transactionsData = transactionsData.map(transactionData => {
+      const products = transactionData.productOrdered.map(elem => {
+        return {
+          id: elem.product.id,
+          name: elem.product.name,
+          price: elem.product.price,
+          description: elem.product.description,
+          photo: elem.product.photo,
+          orderQuantity: elem.orderQuantity,
+        }
+      })
+      return {
+        id: transactionData.id,
+        user: transactionData.user,
+        name: transactionData.name,
+        email: transactionData.email,
+        phone: transactionData.phone,
+        address: transactionData.address,
+        posscode: transactionData.posscode,
+        attachment: transactionData.attachment,
+        status: transactionData.status,
+        products
+      }
+    }) 
+
+    //response
+    res.send({
+      status: "success",
+      data: {
+        transactions: transactionsData
+      }
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.send({
+      status: "failed",
+      message: "Server Error",
+    });
+  }
+}

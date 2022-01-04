@@ -7,7 +7,8 @@ const router = express.Router();
 //Controller
 const { addUsers, getUser, getProfile, checkUser, editUser } = require('../controllers/user');
 const { addProduct, getProducts, getProduct } = require('../controllers/product');
-const { addTransaction, getTransactions, editTransaction, myTransaction, getTransaction } = require('../controllers/transaction');
+const { addTransaction, getTransactions, editTransaction, 
+          myTransaction, getTransaction, getTransactionsF } = require('../controllers/transaction');
 
 //Middleware
 const { auth } = require('../middlewares/auth');
@@ -31,6 +32,7 @@ router.get("/transactions", auth, getTransactions);
 router.patch("/transaction/:id", auth, editTransaction);
 router.get("/my-transactions", auth, myTransaction);
 router.get("/transaction/:id", getTransaction);
+router.get("/transactionf/:status", auth, getTransactionsF)
 
 //export
 module.exports = router;
